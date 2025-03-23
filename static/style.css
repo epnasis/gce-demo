@@ -155,25 +155,35 @@ button:active {
   color: #e65100;
 }
 
-/* Info Line Styles */
-.info-line {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #555;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+/* Status Info Styles */
+.status-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+    padding: 0.5rem; /* Add padding around the status info */
+    border-radius: 8px; /* Add rounded corners */
+    background-color: #f0f0f0; /* Light gray background */
 }
 
-.info-label {
-  margin-right: 0.5rem;
-  font-weight: bold;
+.info-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
 }
 
-.info-separator {
-  margin: 0 0.5rem;
-  color: #ccc;
+.info-section .info-label {
+    font-weight: bold;
+    color: #333; /* Darker color for labels */
+}
+
+.info-section .info-value {
+    color: #202124; /* Darker color for values */
 }
 
 /* Media Queries */
@@ -197,25 +207,21 @@ button:active {
     max-width: 95%;
   }
 
-  .info-line {
-    flex-direction: column;
-  }
+    .status-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 
-  .info-label {
-    margin-right: 0;
-  }
+    .info-section {
+        gap: 0.1rem;
+    }
+    table {
+        display: block;
+        overflow-x: auto;
+    }
 
-  .info-separator {
-    display: none;
-  }
-
-  table {
-    display: block;
-    overflow-x: auto;
-  }
-
-  th,
-  td {
-    min-width: 120px;
-  }
+    th,
+    td {
+        min-width: 120px;
+    }
 }

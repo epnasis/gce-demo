@@ -44,12 +44,15 @@
                 </tr>
             </tbody>
         </table>
-        <div class="info-line">
-            <span class="info-label">Page loaded at:</span>
-            <span id="load-time">{{ timestamp }}</span>
-            <span class="info-separator">|</span>
-            <span class="info-label">Uptime:</span>
-            <span id="uptime">{{ uptime }}</span>
+        <div class="status-info">
+            <div class="info-section">
+                <span class="info-label">Hostname:</span>
+                <span id="hostname" class="info-value">{{ hostname }}</span>
+            </div>
+            <div class="info-section">
+                <span class="info-label">Uptime:</span>
+                <span id="uptime" class="info-value">{{ uptime }}</span>
+            </div>
         </div>
 
     </main>
@@ -58,8 +61,8 @@
         const toggleHealthButton = document.getElementById('toggle-health-button');
         const cpuLoadStatus = document.getElementById('cpu-load-status');
         const healthStatus = document.getElementById('health-status');
-        const loadTimeDisplay = document.getElementById('load-time');
         const uptimeDisplay = document.getElementById('uptime');
+        const hostnameDisplay = document.getElementById('hostname');
 
 
         function updateStatus(element, newStatus, isUnhealthy) {
@@ -98,7 +101,7 @@
                 .then(response => response.json())
                 .then(data => {
                     uptimeDisplay.textContent = data.uptime;
-                    loadTimeDisplay.textContent = data.loadTime;
+                    hostnameDisplay.textContent = data.hostname;
                 })
                 .catch(error => {
                     console.error("Error fetching uptime:", error);

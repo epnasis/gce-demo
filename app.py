@@ -4,6 +4,7 @@ import time
 import threading
 import os
 import multiprocessing
+import socket
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ vm_healthy = True
 start_time = time.time()
 cpu_load_processes = []  # To store the CPU load processes
 NUM_CPU_CORES = multiprocessing.cpu_count()
+hostname = socket.gethostname()
 
 def get_uptime():
     """Calculates the uptime of the application."""
@@ -72,7 +74,8 @@ def index():
                            vm_cpu_load=vm_cpu_load,
                            vm_healthy=vm_healthy,
                            timestamp=timestamp,
-                           uptime=uptime)
+                           uptime=uptime,
+                           hostname=hostname)
 
 @app.route('/api/toggle_cpu', methods=['POST'])
 def api_toggle_cpu():
@@ -97,7 +100,8 @@ def api_uptime():
     """Returns the uptime and load time as JSON."""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     uptime = get_uptime()
-    return jsonify({'uptime': uptime, 'loadTime': timestamp})
+    hostname = socket.gethostname()
+    return jsonify({'uptime': uptime, 'loadTime': timestamp, 'hostname': hostname})
 
 @app.route('/healthz')
 def healthz():

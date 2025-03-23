@@ -6,165 +6,6 @@
     <title>Compute Engine Demo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Google Sans', sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #ffffff;
-        color: #202124;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      header {
-        padding: 1rem 0;
-        width: 100%;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      header h1 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #1a73e8;
-        margin: 0;
-      }
-
-      main {
-        padding: 2rem;
-        width: 100%;
-        max-width: 800px;
-        box-sizing: border-box;
-      }
-
-      .image-container {
-        margin: 2rem auto;
-        text-align: center;
-      }
-
-      .image-container img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      table {
-        width: 100%;
-        margin: 2rem auto;
-        border-collapse: collapse;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        table-layout: fixed;
-      }
-
-      th, td {
-        border: 1px solid #e0e0e0;
-        padding: 12px;
-        text-align: left;
-        word-wrap: break-word;
-      }
-
-      th {
-        background-color: #f7f7f7;
-        font-weight: 500;
-        color: #333;
-      }
-
-      td {
-        color: #444;
-      }
-
-
-      button {
-        padding: 12px 24px;
-        background-color: #1a73e8;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        margin: 5px;
-      }
-
-      button:hover {
-        background-color: #0d47a1;
-      }
-
-      button:active {
-        background-color: #0a377e;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
-
-      p {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 1rem;
-      }
-
-      .status-text {
-        font-weight: bold;
-        color: #388e3c;
-        transition: color 0.3s ease;
-      }
-
-      .status-text.unhealthy {
-        color: #e65100;
-      }
-
-      .info-line {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: #555;
-      }
-
-      .info-label {
-        margin-right: 0.5rem;
-        font-weight: bold;
-      }
-
-      .info-separator {
-        margin: 0 0.5rem;
-        color: #ccc;
-      }
-
-      @media (max-width: 600px) {
-        th, td {
-          padding: 8px;
-          font-size: 0.9rem;
-        }
-        button {
-          padding: 10px 20px;
-          font-size: 0.9rem;
-        }
-        h1 {
-            font-size: 2.5rem;
-        }
-        .image-container {
-            max-width: 95%;
-        }
-        .info-line {
-            flex-direction: column;
-        }
-        .info-label{
-            margin-right: 0;
-        }
-        .info-separator{
-            display: none;
-        }
-      }
-    </style>
 </head>
 <body>
     <header>
@@ -177,21 +18,28 @@
         <table>
             <thead>
                 <tr>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th class="status-column">Status</th>
+                    <th class="action-column">Action</th>
+                    <th class="current-status-column">Current Status</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td id="cpu-load-status">CPU Load: <span class="status-text {% if vm_cpu_load %}unhealthy{% endif %}">{{ 'High' if vm_cpu_load else 'Low' }}</span></td>
+                    <td>CPU Load</td>
                     <td>
-                        <button id="toggle-cpu-button">Toggle CPU Load</button>
+                        <button id="toggle-cpu-button" aria-label="Toggle CPU Load">Toggle CPU Load</button>
+                    </td>
+                    <td id="cpu-load-status" class="status-cell {% if vm_cpu_load %}status-red{% else %}status-green{% endif %}">
+                        <span class="status-text">{% if vm_cpu_load %}High{% else %}Low{% endif %}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td id="health-status">Health: <span class="status-text {% if not vm_healthy %}unhealthy{% endif %}">{{ 'Healthy' if vm_healthy else 'Unhealthy' }}</span></td>
+                    <td>Health</td>
                     <td>
-                        <button id="toggle-health-button">Toggle Health</button>
+                        <button id="toggle-health-button" aria-label="Toggle Health">Toggle Health</button>
+                    </td>
+                    <td id="health-status" class="status-cell {% if vm_healthy %}status-green{% else %}status-red{% endif %}">
+                        <span class="status-text">{% if vm_healthy %}Healthy{% else %}Unhealthy{% endif %}</span>
                     </td>
                 </tr>
             </tbody>
@@ -216,46 +64,45 @@
 
         function updateStatus(element, newStatus, isUnhealthy) {
             element.querySelector('.status-text').textContent = newStatus;
-            element.querySelector('.status-text').classList.toggle('unhealthy', isUnhealthy);
-            // You can add more sophisticated animation here if you want.
-            // For example, you could use a library like GSAP:
-            // gsap.to(element, { color: isUnhealthy ? "#e65100" : "#388e3c", duration: 0.3 });
+            if (isUnhealthy) {
+                element.classList.add('status-red');
+                element.classList.remove('status-green');
+            } else {
+                element.classList.add('status-green');
+                element.classList.remove('status-red');
+            }
         }
 
         toggleCpuButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent the default form submission
-            fetch('/toggle_cpu', { method: 'POST' })
+            event.preventDefault();
+            fetch('/api/toggle_cpu', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     const newStatus = data.vm_cpu_load ? 'High' : 'Low';
-                    updateStatus(cpuLoadStatus,  newStatus, data.vm_cpu_load);
+                    updateStatus(cpuLoadStatus, newStatus, data.vm_cpu_load);
                 });
         });
 
         toggleHealthButton.addEventListener('click', (event) => {
             event.preventDefault();
-            fetch('/toggle_health', { method: 'POST' })
+            fetch('/api/toggle_health', { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     const newStatus = data.vm_healthy ? 'Healthy' : 'Unhealthy';
-                    updateStatus(healthStatus,  newStatus, !data.vm_healthy);
+                    updateStatus(healthStatus, newStatus, !data.vm_healthy);
                 });
         });
 
         function updateUptime() {
-            fetch('/')
-            .then(response => response.text())
-            .then(data => {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = data;
-                const uptime = tempDiv.querySelector('#uptime').textContent;
-                const loadTime = tempDiv.querySelector('#load-time').textContent;
-                uptimeDisplay.textContent = uptime;
-                loadTimeDisplay.textContent = loadTime;
-            })
-            .catch(error => {
-                console.error("Error fetching uptime:", error);
-            });
+            fetch('/api/uptime')
+                .then(response => response.json())
+                .then(data => {
+                    uptimeDisplay.textContent = data.uptime;
+                    loadTimeDisplay.textContent = data.loadTime;
+                })
+                .catch(error => {
+                    console.error("Error fetching uptime:", error);
+                });
         }
         updateUptime();
         setInterval(updateUptime, 5000);

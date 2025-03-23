@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 
-# Initial states
+# Initial states (now global variables, no need for shared state)
 vm_cpu_load = False
 vm_healthy = True
 start_time = time.time()
@@ -69,22 +69,30 @@ def index():
                            timestamp=timestamp,
                            uptime=uptime)
 
-@app.route('/toggle_cpu', methods=['POST'])
-def toggle_cpu():
+@app.route('/api/toggle_cpu', methods=['POST'])
+def api_toggle_cpu():
     """Toggles the CPU load status (simulated)."""
     global vm_cpu_load
+    vm_cpu_load = not vm_cpu_load
     if vm_cpu_load:
-        stop_cpu_load()
-    else:
         start_cpu_load()
+    else:
+        stop_cpu_load()
     return jsonify({'vm_cpu_load': vm_cpu_load})
 
-@app.route('/toggle_health', methods=['POST'])
-def toggle_health():
+@app.route('/api/toggle_health', methods=['POST'])
+def api_toggle_health():
     """Toggles the VM health status (simulated)."""
     global vm_healthy
     vm_healthy = not vm_healthy
     return jsonify({'vm_healthy': vm_healthy})
+
+@app.route('/api/uptime')
+def api_uptime():
+    """Returns the uptime and load time as JSON."""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    uptime = get_uptime()
+    return jsonify({'uptime': uptime, 'loadTime': timestamp})
 
 @app.route('/healthz')
 def healthz():
@@ -96,5 +104,4 @@ def healthz():
 
 if __name__ == '__main__':
     # Run the Flask app.  Make sure 'debug' is False in production.
-    # app.run(debug=True, host='0.0.0.0', port=80)
-    pass
+    app.run(debug=True, host='0.0.0.0', port=80)

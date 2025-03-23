@@ -73,17 +73,18 @@ td {
   color: #444;
 }
 
-/* Set column widths using percentages */
-th:nth-child(1),
-td:nth-child(1) {
+/* Set column widths using classes */
+.status-column {
   width: 30%;
 }
 
-th:nth-child(2),
-td:nth-child(2) {
+.action-column {
   width: 20%;
 }
 
+.current-status-column {
+  width: 20%;
+}
 
 button {
   padding: 12px 24px;
@@ -111,16 +112,6 @@ p {
   font-size: 1rem;
   color: #555;
   margin-bottom: 1rem;
-}
-
-.status-text {
-  font-weight: bold;
-  color: #388e3c;
-  transition: color 0.3s ease;
-}
-
-.status-text.unhealthy {
-  color: #e65100;
 }
 
 .info-line {
@@ -185,3 +176,7 @@ p {
     min-width: 120px;
   }
 }
+
+/* New Status Cell Styles */
+.status-cell {
+  text-align: center;

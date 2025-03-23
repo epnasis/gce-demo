@@ -5,6 +5,8 @@ import threading
 import os
 import multiprocessing
 import socket
+import math
+import sys
 
 app = Flask(__name__)
 
@@ -15,6 +17,8 @@ start_time = time.time()
 cpu_load_processes = []  # To store the CPU load processes
 NUM_CPU_CORES = multiprocessing.cpu_count()
 hostname = socket.gethostname()
+DEFAULT_INTERVAL = 300
+DEFAULT_UTILIZATION = 90
 
 def get_uptime():
     """Calculates the uptime of the application."""
@@ -27,32 +31,40 @@ def get_uptime():
     seconds = int(uptime_seconds % 60)
     return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
 
-def waste_cpu():
-    """
-    This function consumes CPU by performing a calculation in a loop.
-    It now checks the global vm_cpu_load variable to stop.
-    """
-    global vm_cpu_load
-    print(f"CPU load process started in PID: {os.getpid()}")  #debug
-    while vm_cpu_load:
-        x = 123456789 * 987654321
-        x = x // 2
-        x = x + 10000
-        #time.sleep(0.01)  # Add a small sleep to reduce impact somewhat.  Removed
-    print(f"CPU load process stopped in PID: {os.getpid()}")  #debug
+def load_worker(interval, utilization):
+    """Worker function to generate CPU load."""
+    start_time = time.time()
+    for i in range(0, int(interval)):
+        while time.time() - start_time < i + utilization / 100.0:
+            a = math.sqrt(64 * 64 * 64 * 64 * 64)
+        time.sleep(1 - utilization / 100.0)
 
-def start_cpu_load():
+def generate_cpu_load(interval=DEFAULT_INTERVAL, utilization=DEFAULT_UTILIZATION):
+    """
+    Generate a utilization % for a duration of interval seconds.
+    It checks the number of CPU cores and uses multiprocessing to run
+    the generate load function on all cores in parallel.
+    To generate a load, we perform an arithmetic operation for a fraction
+    of a second and then sleep for the rest.
+    So if you want 20% utilization, the script would run the arithmetic
+    operation for 0.2 seconds and then sleep for 0.8 seconds.
+    """
+    global cpu_load_processes
+    processes = []
+    for _ in range(multiprocessing.cpu_count()):
+        p = multiprocessing.Process(target=load_worker, args=(interval, utilization))
+        p.daemon = True
+        p.start()
+        processes.append(p)
+    cpu_load_processes = processes
+
+def start_cpu_load(interval=DEFAULT_INTERVAL, utilization=DEFAULT_UTILIZATION):
     """Starts generating CPU load in separate processes."""
     global cpu_load_processes, vm_cpu_load
     if not cpu_load_processes:
         vm_cpu_load = True
-        num_processes = int(NUM_CPU_CORES * 0.9)  # Use 90% of CPU cores
-        for _ in range(num_processes):
-            process = multiprocessing.Process(target=waste_cpu)
-            process.daemon = True
-            cpu_load_processes.append(process)
-            process.start()
-        print(f"Starting CPU load with {num_processes} processes...")
+        generate_cpu_load(interval, utilization)
+        print(f"Starting CPU load with {len(cpu_load_processes)} processes, {utilization}% utilization for {interval} seconds...")
     else:
         print("CPU load already running...")
 
@@ -61,6 +73,7 @@ def stop_cpu_load():
     global vm_cpu_load, cpu_load_processes
     vm_cpu_load = False  # Signal the processes to stop
     for process in cpu_load_processes:
+        process.terminate()
         process.join()  # Wait for the process to finish
     cpu_load_processes = []
     print("Stopping CPU load.")
@@ -68,12 +81,10 @@ def stop_cpu_load():
 @app.route('/')
 def index():
     """Renders the main page with dynamic status."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     uptime = get_uptime()
     return render_template('index.html',
                            vm_cpu_load=vm_cpu_load,
                            vm_healthy=vm_healthy,
-                           timestamp=timestamp,
                            uptime=uptime,
                            hostname=hostname)
 
@@ -98,10 +109,8 @@ def api_toggle_health():
 @app.route('/api/uptime')
 def api_uptime():
     """Returns the uptime and load time as JSON."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     uptime = get_uptime()
-    hostname = socket.gethostname()
-    return jsonify({'uptime': uptime, 'loadTime': timestamp, 'hostname': hostname})
+    return jsonify({'uptime': uptime, 'hostname': hostname})
 
 @app.route('/healthz')
 def healthz():

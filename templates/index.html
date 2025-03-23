@@ -18,28 +18,28 @@
         <table>
             <thead>
                 <tr>
-                    <th class="status-column">Status</th>
-                    <th class="action-column">Action</th>
+                    <th class="status-column">Metric</th>
                     <th class="current-status-column">Current Status</th>
+                    <th class="action-column">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>CPU Load</td>
-                    <td>
-                        <button id="toggle-cpu-button" aria-label="Toggle CPU Load">Toggle CPU Load</button>
-                    </td>
                     <td id="cpu-load-status" class="status-cell {% if vm_cpu_load %}status-red{% else %}status-green{% endif %}">
                         <span class="status-text">{% if vm_cpu_load %}High{% else %}Low{% endif %}</span>
+                    </td>
+                    <td>
+                        <button id="toggle-cpu-button" aria-label="Toggle CPU Load">Toggle CPU Load</button>
                     </td>
                 </tr>
                 <tr>
                     <td>Health</td>
-                    <td>
-                        <button id="toggle-health-button" aria-label="Toggle Health">Toggle Health</button>
-                    </td>
                     <td id="health-status" class="status-cell {% if vm_healthy %}status-green{% else %}status-red{% endif %}">
                         <span class="status-text">{% if vm_healthy %}Healthy{% else %}Unhealthy{% endif %}</span>
+                    </td>
+                    <td>
+                        <button id="toggle-health-button" aria-label="Toggle Health">Toggle Health</button>
                     </td>
                 </tr>
             </tbody>

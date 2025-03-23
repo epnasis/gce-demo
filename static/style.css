@@ -1,22 +1,31 @@
+/* style.css */
+
+/* General Styles */
 body {
   font-family: 'Google Sans', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: #f8f9fa; /* Light gray background for better readability */
   color: #202124;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh; /* Ensure body takes full viewport height */
 }
 
+/* Header Styles */
 header {
   padding: 1rem 0;
   width: 100%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #fff; /* White background for header */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
   display: flex;
   justify-content: center;
   align-items: center;
+  position: sticky; /* Make header sticky */
+  top: 0;
+  z-index: 100; /* Ensure header stays on top */
 }
 
 header h1 {
@@ -26,11 +35,13 @@ header h1 {
   margin: 0;
 }
 
+/* Main Content Styles */
 main {
   padding: 2rem;
   width: 100%;
   max-width: 800px;
   box-sizing: border-box;
+  flex-grow: 1; /* Allow main to grow and push footer down */
 }
 
 .image-container {
@@ -45,6 +56,7 @@ main {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Table Styles */
 table {
   width: 100%;
   margin: 2rem auto;
@@ -61,6 +73,7 @@ td {
   padding: 12px;
   text-align: left;
   word-wrap: break-word;
+  vertical-align: middle; /* Vertically align text in cells */
 }
 
 th {
@@ -73,19 +86,20 @@ td {
   color: #444;
 }
 
-/* Set column widths using classes */
+/* Column Widths */
 .status-column {
+  width: 40%;
+}
+
+.current-status-column {
   width: 30%;
 }
 
 .action-column {
-  width: 20%;
+  width: 30%;
 }
 
-.current-status-column {
-  width: 20%;
-}
-
+/* Button Styles */
 button {
   padding: 12px 24px;
   background-color: #1a73e8;
@@ -94,13 +108,14 @@ button {
   border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.7s ease; /* Added transition for box-shadow */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   margin: 5px;
 }
 
 button:hover {
   background-color: #0d47a1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increased shadow on hover */
 }
 
 button:active {
@@ -108,12 +123,39 @@ button:active {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1rem;
+/* Status Text Styles */
+.status-cell {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
+.status-text {
+  font-weight: bold;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  padding: 12px; /* Increased padding */
+  border-radius: 8px; /* Increased border-radius */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.status-cell.status-green .status-text {
+  background-color: #e8f5e9; /* Light green background */
+  color: #388e3c;
+}
+
+.status-cell.status-red .status-text {
+  background-color: #ffebee; /* Light red background */
+  color: #e65100;
+}
+
+/* Info Line Styles */
 .info-line {
   display: flex;
   justify-content: center;
@@ -121,6 +163,7 @@ p {
   margin-top: 1rem;
   font-size: 0.9rem;
   color: #555;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .info-label {
@@ -133,7 +176,7 @@ p {
   color: #ccc;
 }
 
-/* Media query for screens smaller than 600px */
+/* Media Queries */
 @media (max-width: 600px) {
   th,
   td {
@@ -147,7 +190,7 @@ p {
   }
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 2rem; /* Slightly smaller on mobile */
   }
 
   .image-container {
@@ -176,7 +219,3 @@ p {
     min-width: 120px;
   }
 }
-
-/* New Status Cell Styles */
-.status-cell {
-  text-align: center;

@@ -12,6 +12,21 @@ The application allows you to:
 
 ## Setup
 
+`
+gcloud compute instances create app-$(date +%Y%m%d-%H%M%S) \
+ --zone=us-central1-c --machine-type=e2-medium \
+ --image-family=debian-12 --image-project=debian-cloud \
+ --tags=http-server --metadata=startup-script='#!/bin/bash
+apt-get update -y
+apt-get install -y python3 python3-pip git python3-venv
+git clone https://github.com/epnasis/gce-demo.git /var/www/app
+cd /var/www/app
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+python3 app.py'
+`
+
 1.  **Prerequisites:**
     * Python 3.6 or later
     * Git

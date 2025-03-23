@@ -3,6 +3,7 @@ import datetime
 import time
 import threading
 import os
+import multiprocessing
 
 app = Flask(__name__)
 
@@ -10,7 +11,8 @@ app = Flask(__name__)
 vm_cpu_load = False
 vm_healthy = True
 start_time = time.time()
-cpu_load_thread = None  # To store the CPU load thread
+cpu_load_processes = []  # To store the CPU load processes
+NUM_CPU_CORES = multiprocessing.cpu_count()
 
 def get_uptime():
     """Calculates the uptime of the application."""
@@ -29,33 +31,36 @@ def waste_cpu():
     It now checks the global vm_cpu_load variable to stop.
     """
     global vm_cpu_load
-    print("CPU load thread started.") #debug
+    print(f"CPU load process started in PID: {os.getpid()}")  #debug
     while vm_cpu_load:
         x = 123456789 * 987654321
         x = x // 2
         x = x + 10000
         #time.sleep(0.01)  # Add a small sleep to reduce impact somewhat.  Removed
-    print("CPU load thread stopped.") #debug
+    print(f"CPU load process stopped in PID: {os.getpid()}")  #debug
 
 def start_cpu_load():
-    """Starts generating CPU load in a separate thread."""
-    global cpu_load_thread, vm_cpu_load
-    if cpu_load_thread is None or not cpu_load_thread.is_alive():
+    """Starts generating CPU load in separate processes."""
+    global cpu_load_processes, vm_cpu_load
+    if not cpu_load_processes:
         vm_cpu_load = True
-        cpu_load_thread = threading.Thread(target=waste_cpu)
-        cpu_load_thread.daemon = True
-        cpu_load_thread.start()
-        print("Starting CPU load...")
+        num_processes = int(NUM_CPU_CORES * 0.9)  # Use 90% of CPU cores
+        for _ in range(num_processes):
+            process = multiprocessing.Process(target=waste_cpu)
+            process.daemon = True
+            cpu_load_processes.append(process)
+            process.start()
+        print(f"Starting CPU load with {num_processes} processes...")
     else:
         print("CPU load already running...")
 
 def stop_cpu_load():
     """Stops the CPU load generation."""
-    global vm_cpu_load, cpu_load_thread
-    vm_cpu_load = False  # Signal the thread to stop
-    if cpu_load_thread is not None and cpu_load_thread.is_alive():
-        cpu_load_thread.join()  # Wait for the thread to finish
-    cpu_load_thread = None
+    global vm_cpu_load, cpu_load_processes
+    vm_cpu_load = False  # Signal the processes to stop
+    for process in cpu_load_processes:
+        process.join()  # Wait for the process to finish
+    cpu_load_processes = []
     print("Stopping CPU load.")
 
 @app.route('/')

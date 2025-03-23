@@ -1,7 +1,4 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
@@ -21,12 +18,24 @@
         "FLASK_DEBUG": "1"
       },
       "args": [
-        "run",
-        "--no-debugger",
-        "--no-reload"
+        "run"
       ],
       "jinja": true,
       "autoStartBrowser": false
+    },
+    {
+      "name": "Gunicorn",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "gunicorn",
+      "args": [
+        "--workers",
+        "3",
+        "--bind",
+        "0.0.0.0:80",
+        "wsgi:app"
+      ],
+      "justMyCode": false
     }
   ]
 }

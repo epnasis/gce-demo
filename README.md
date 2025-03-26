@@ -10,22 +10,30 @@ The application allows you to:
 * Toggle the health status between Healthy and Unhealthy.
 * See the uptime of the application.
 
-## Setup
+## INSTALL
 
-`
-gcloud compute instances create app-$(date +%Y%m%d-%H%M%S) \
- --zone=us-central1-c --machine-type=e2-medium \
- --image-family=debian-12 --image-project=debian-cloud \
- --tags=http-server --metadata=startup-script='#!/bin/bash
-apt-get update -y
-apt-get install -y python3 python3-pip git python3-venv
-git clone https://github.com/epnasis/gce-demo.git /var/www/app
-cd /var/www/app
+Open cloud shell and run:
+
+```bash
+ZONE=europe-west9-a
+MACHINE=c3-standard-8 
+NAME=app-$(date +%Y%m%d-%H%M%S)
+gcloud compute instances create $NAME --zone=$ZONE --machine-type=$MACHINE --tags=http-server  --create-disk=boot=yes,image=projects/debian-cloud/global/images/debian-12-bookworm-v20250311,size=10,type=pd-ssd --metadata=startup-script='#!/bin/bash
+APPDIR="/var/www/app"
+if [ ! -d "$APPDIR" ]; then
+  apt-get update -y
+  apt-get install -y python3 python3-pip git python3-venv
+  git clone https://github.com/epnasis/gce-demo.git "$APPDIR"
+fi
+cd "$APPDIR"
+git pull
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 python3 app.py'
-`
+```
+
+## DEVELOPMENT
 
 1.  **Prerequisites:**
     * Python 3.6 or later
@@ -55,7 +63,7 @@ python3 app.py'
 5.  **Run the application:**
 
     ```bash
-    flask run --host=0.0.0.0 --port=80
+    python3 app.py
     ```
 
 6.  **Access the application:** Open your web browser and go to `http://your-server-ip:80` or `http://localhost:80` if you are running it locally.
@@ -66,7 +74,6 @@ python3 app.py'
 * `index.html`:  The HTML template for the main web page.  Displays the VM status, controls, and uptime.
 * `style.css`:  The CSS stylesheet for the web page.  Provides the visual styling.
 * `logo.png`:  The Google Cloud logo image.
-* `.gitignore`: Specifies intentionally untracked files that Git should ignore.
 
 ## Endpoints
 
@@ -89,4 +96,4 @@ python3 app.py'
 
 ## Author
 
-[Your Name or Organization]
+Pawel Wenda, Group Product Manager, Google Cloud

@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 8080
 
 # 6. Run Command: Use Gunicorn with 1 worker, binding to internal port 8080
-CMD ["gunicorn", "--workers", "1", "--bind", "0.0.0.0:8080", "main:app"]
+CMD ["gunicorn", "--workers", "1", "--bind", "0.0.0.0:8080", "app:app"]

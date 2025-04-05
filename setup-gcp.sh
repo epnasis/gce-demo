@@ -212,7 +212,7 @@ gcloud artifacts repositories add-iam-policy-binding "$AR_REPO_NAME" \
 # --- Note on Public Access (Alternative - Use with Caution!) ---
 # If you truly needed the repository to be public (less secure, generally not recommended for this):
 # You would run this INSTEAD of the command above:
-# gcloud artifacts repositories add-iam-policy-binding "$AR_REPO_NAME" --location=$AR_LOCATION --project=$PROJECT_ID --member="allUsers" --role="roles/artifactregistry.reader" --condition=None
+gcloud artifacts repositories add-iam-policy-binding "$AR_REPO_NAME" --location=$AR_LOCATION --project=$PROJECT_ID --member="allUsers" --role="roles/artifactregistry.reader" --condition=None
 
 # 10. Configure local Docker authentication
 AR_DOCKER_HOST="${AR_LOCATION}-docker.pkg.dev"
@@ -237,7 +237,7 @@ else
     echo "[+] Creating GCE Instance Template '$VM_TEMPLATE_NAME' in region '$GCP_REGION'..."
     # Define the startup script that will run inside the VM
     # Using the specific multi-region image path ensures the correct image is run
-    STARTUP_SCRIPT_CONTENT='#! /bin/bash
+    STARTUP_SCRIPT_CONTENT='#!/bin/bash
     IMAGE_PATH="'$FULL_IMAGE_PATH'"
     docker pull $IMAGE_PATH
     docker rm -f app || true

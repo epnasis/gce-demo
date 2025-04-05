@@ -11,7 +11,7 @@ AR_LOCATION="us"
 AR_REPO_NAME="images"
 DOCKER_IMAGE_NAME="gce-demo"
 DOCKER_IMAGE_TAG="latest"
-VM_TEMPLATE_NAME="gce-demo-cos-template"
+VM_TEMPLATE_NAME="gce-demo-template"
 MACHINE_TYPE="c3-standard-8"
 
 # --- Ask for and Validate Project ID ---
@@ -241,7 +241,7 @@ else
     IMAGE_PATH="'$FULL_IMAGE_PATH'"
     docker pull $IMAGE_PATH
     docker rm -f app || true
-    docker run -d --name app -p 80:8080 --restart=always $IMAGE_PATH'
+    docker run -d --name app -p 80:8080 --hostname $(hostname) --restart=always $IMAGE_PATH'
 
     # Create the instance template using COS, SSD, and the startup script
     # Service account was granted permissions earlier
@@ -266,5 +266,5 @@ echo "[*] Instance Template Created or Verified: $VM_TEMPLATE_NAME in $GCP_REGIO
 echo ""
 echo "[*] You can now create a VM instance from this template using the GCP Console"
 echo "[*] or the following gcloud command (replace ZONE, generates dynamic name):"
-echo "gcloud compute instances create \"app-\$(date +%Y%m%d-%H%M%S)\" --project=$PROJECT_ID --zone=${GCP_REGION}-a --source-instance-template=$VM_TEMPLATE_NAME"
+echo "gcloud compute instances create \"app-\$(date +%Y%m%d-%H%M%S)\" --project=$PROJECT_ID --zone=${GCP_REGION}-c --source-instance-template=$VM_TEMPLATE_NAME"
 

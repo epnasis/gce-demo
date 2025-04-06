@@ -93,10 +93,10 @@ def api_toggle_cpu():
     """Toggles the CPU load status (simulated)."""
     global vm_cpu_load
     vm_cpu_load = not vm_cpu_load
-    if vm_cpu_load:
-        start_cpu_load()
-    else:
-        stop_cpu_load()
+    #if vm_cpu_load:
+    #    start_cpu_load()
+    #else:
+    #    stop_cpu_load()
     return jsonify({'vm_cpu_load': vm_cpu_load})
 
 @app.route('/api/toggle_health', methods=['POST'])

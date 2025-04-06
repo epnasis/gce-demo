@@ -231,7 +231,8 @@ docker push "$FULL_IMAGE_PATH"
 
 # 13. Create GCE Instance Template if it doesn't exist
 echo "[?] Checking GCE Instance Template '$VM_TEMPLATE_NAME'..."
-if gcloud compute instance-templates describe "$VM_TEMPLATE_NAME" --project=$PROJECT_ID > /dev/null 2>&1; then
+if gcloud compute instance-templates describe "$VM_TEMPLATE_NAME" \
+    --region=$GCP_REGION --project=$PROJECT_ID > /dev/null 2>&1; then
     echo "[*] GCE Instance Template '$VM_TEMPLATE_NAME' already exists."
 else
     echo "[+] Creating GCE Instance Template '$VM_TEMPLATE_NAME' in region '$GCP_REGION'..."
@@ -248,7 +249,7 @@ else
     gcloud compute instance-templates create "$VM_TEMPLATE_NAME" \
         --project=$PROJECT_ID \
         --machine-type=$MACHINE_TYPE \
-        --region=$GCP_REGION \
+        --instance-template-region=$GCP_REGION \
         --tags=http-server \
         --image-project=cos-cloud \
         --image-family=cos-stable \
@@ -266,5 +267,5 @@ echo "[*] Instance Template Created or Verified: $VM_TEMPLATE_NAME in $GCP_REGIO
 echo ""
 echo "[*] You can now create a VM instance from this template using the GCP Console"
 echo "[*] or the following gcloud command (replace ZONE, generates dynamic name):"
-echo "gcloud compute instances create \"app-\$(date +%Y%m%d-%H%M%S)\" --project=$PROJECT_ID --zone=${GCP_REGION}-c --source-instance-template=$VM_TEMPLATE_NAME"
-
+echo "gcloud compute instances create \"app-\$(date +%Y%m%d-%H%M%S)\" --project=$PROJECT_ID --zone=${GCP_REGION}-c \\"
+echo "  --source-instance-template=\"projects/$PROJECT_ID/regions/$GCP_REGION/instanceTemplates/$VM_TEMPLATE_NAME\""
